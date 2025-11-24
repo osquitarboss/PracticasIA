@@ -12,7 +12,7 @@ namespace GrupoJ
         private WorldInfo _worldInfo;
         private INavigationAlgorithm _navigationAlgorithm;
 
-        private CellInfo[] _objectives;
+        private List<CellInfo> _objectives;
         private Queue<CellInfo> _path;
 
         public CellInfo CurrentObjective { get; private set; }
@@ -25,16 +25,19 @@ namespace GrupoJ
         {
             _worldInfo = worldInfo;
             _navigationAlgorithm = navigationAlgorithm;
-            Debug.Log("Numero de destinos: " + GetDestinations().Length);
+            Debug.Log("Numero de destinos: " + GetDestinations().Count);
         }
 
         public Vector3? GetNextDestination(Vector3 currentPosition)
         {
+            Debug.Log("Obteniendo siguiente destino desde la posicion: " + currentPosition);
+            // Primera iteracion, obtener objetivos y sacar el primero
             if (_objectives == null)
             {
                 _objectives = GetDestinations();
-                CurrentObjective = _objectives[_objectives.Length - 1];
-                NumberOfDestinations = _objectives.Length;
+                CurrentObjective = _objectives[0];
+                _objectives.RemoveAt(0);
+                NumberOfDestinations = _objectives.Count;
             }
 
             if (_path == null || _path.Count == 0)
@@ -48,21 +51,48 @@ namespace GrupoJ
             if (_path.Count > 0)
             {
                 CellInfo destination = _path.Dequeue();
+                Debug.Log("Numero de nodos: " + _path.Count);
                 CurrentDestination = _worldInfo.ToWorldPosition(destination);
             }
 
+            if (_path.Count == 0 && _objectives.Count > 0)
+            {
+                _objectives = SortByDistance(_objectives, _worldInfo.FromVector3(currentPosition));
+                CurrentObjective = _objectives[0];
+                _objectives.RemoveAt(0);
+                NumberOfDestinations = _objectives.Count;
+            }
+
+            if (_objectives.Count == 0 && _path.Count == 0)
+            {
+                _objectives.Add(_worldInfo.Exit);
+            }
+
+            Debug.Log("Calculando ruta hacia el objetivo: " + CurrentObjective);
+            Debug.Log("Numero de destinos: " + _objectives.Count);
             return CurrentDestination;
         }
 
-        private CellInfo[] GetDestinations()
+        private List<CellInfo> GetDestinations()
         {
             List<CellInfo> targets = new List<CellInfo>();
             foreach (var cell in _worldInfo.Targets)
             {
                 targets.Add(cell);
             }
+            return targets;
+        }
 
-            return targets.ToArray();
+        List<CellInfo> SortByDistance(List<CellInfo> targets, CellInfo currentPos)
+        {
+            targets.Sort((a, b) =>
+            {
+                float distA = currentPos.EuclideanDistance(a);
+                float distB = currentPos.EuclideanDistance(b);
+                return distA.CompareTo(distB);
+            });
+
+            return targets;
         }
     }
 }

@@ -1,18 +1,18 @@
 ﻿#region Copyright
 // MIT License
-// 
+//
 // Copyright (c) 2023 David María Arribas
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,14 +33,14 @@ namespace Components
     {
         private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int MoveSpeed = Animator.StringToHash("MoveSpeed");
-        
+
         public float speed = 0.05f;
         public string navigationAgent;
         public string navigationClass;
-        
-        private INavigationAlgorithm _navigator; 
+
+        private INavigationAlgorithm _navigator;
         private INavigationAgent _searchAgent;
-        
+
         private Animator _animator;
 
         private void Awake()
@@ -49,21 +49,21 @@ namespace Components
             _animator.SetFloat(MoveSpeed, 0f);
             _animator.SetBool(Grounded, true);
         }
-        
+
         private void Start()
         {
-            _navigator = (INavigationAlgorithm) Activator.CreateInstance(Type.GetType(navigationClass) 
+            _navigator = (INavigationAlgorithm) Activator.CreateInstance(Type.GetType(navigationClass)
                 ?? throw new InvalidOperationException());
             _navigator.Initialize(WorldManager.Instance.WorldInfo);
 
-            _searchAgent = (INavigationAgent) Activator.CreateInstance(Type.GetType(navigationAgent) 
+            _searchAgent = (INavigationAgent) Activator.CreateInstance(Type.GetType(navigationAgent)
                 ?? throw new InvalidOperationException());
             _searchAgent.Initialize(WorldManager.Instance.WorldInfo, _navigator);
         }
-        
+
         private Vector3? _currentDestination = null;
         private bool _exitReached = false;
-        
+
         private void Update()
         {
             if (_searchAgent == null || _exitReached)
@@ -73,30 +73,31 @@ namespace Components
 
             if (_currentDestination == null)
             {
+                Debug.Log("Getting next destination... being at " + transform.position);
                 _currentDestination = _searchAgent.GetNextDestination(transform.position);
                 UpdateStats();
-                
+
                 if(_currentDestination == null)
                 {
                     return;
                 }
             }
-            
+
             MoveToDestination();
         }
-        
+
         private void MoveToDestination()
         {
             Vector3 destination = _currentDestination.Value;
             Vector3 direction = (destination - transform.position).normalized;
             Vector3 move = direction * (speed * Time.deltaTime);
             Vector3 lookDirection = new Vector3(direction.x, 0, direction.z) + transform.position;
-            
+
             transform.LookAt(lookDirection);
             transform.position += move;
             _animator.SetFloat(MoveSpeed, speed);
             _animator.SetBool(Grounded, true);
-            
+
             if(Vector3.Distance(destination, transform.position) < 0.2f)
             {
                 if(WorldManager.Instance.WorldInfo.IsExit(_currentDestination.Value))
@@ -104,15 +105,15 @@ namespace Components
                     _exitReached = true;
                     _animator.SetFloat(MoveSpeed, 0f);
                 }
-                
+
                 _currentDestination = null;
-            }            
+            }
         }
 
         #region Statistics update
         public EventHandler<GameStats> OnGameStatsChanged;
         private int steps = 0;
-        
+
         public struct GameStats
         {
             public int remainingTargets;

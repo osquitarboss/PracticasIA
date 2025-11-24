@@ -18,46 +18,59 @@ namespace GrupoJ
         {
             //Hacemos nuestra openList con sortedlist para mantener ordenados por heurística
             SortedList<float, CellInfo> openSet = new SortedList<float, CellInfo>();
-            // Conjunto con los nodos que hemos visitado para no tener ciclos simples
-            HashSet<CellInfo> visited = new HashSet<CellInfo>();
+
+            // El coste desde el nodo inicial a cada nodo
+            Dictionary<CellInfo, float> costs = new Dictionary<CellInfo, float>();
+
             //Mapa para reconstruir el camino una vez encontrado el target
             Dictionary<CellInfo, CellInfo> cameFrom = new Dictionary<CellInfo, CellInfo>();
 
-            // Añadimos el nodo inicial con su heurística
+            // Añadimos el nodo inicial con su heurística y su coste (al principio vale 0 porque no ha recorrido nada aún)
             float h = startNode.EuclideanDistance(targetNode);
+            costs[startNode] = 0;
             openSet.Add(h, startNode);
-            visited.Add(startNode);
 
             while (openSet.Count > 0)
             {
                 // Sacar el de menor heurística (EuclideanDistance de la clase CellInfo)
-                float lowestH = openSet.Keys[0];
-                CellInfo current = openSet[lowestH];
+                float lowestF = openSet.Keys[0];
+                CellInfo current = openSet[lowestF];
                 openSet.RemoveAt(0);
 
                 /// Si encontramos el target, reconstruir el camino
                 if (current == targetNode)
                     return ReconstructPath(cameFrom, current);
 
-
                 // Expandir vecinos
                 foreach (CellInfo neighbor in GetNeighbours(current))
                 {
-                    if (!neighbor.Walkable || visited.Contains(neighbor)) // Comprobar si se puede caminar o si yalo habiamos visitado
+                    if (!neighbor.Walkable) // Comprobar si se puede caminar
                         continue;
 
-                    visited.Add(neighbor); // En caso contrario, marcar como visitado y añadir al mapa de cameFrom
-                    cameFrom[neighbor] = current;
+                    // Coste acumulado al siguiente nodo
+                    float nextNodeCost = costs[current] + 1f;
 
-                    //Calculamos las heurísticas y añadimos a la openSet
-                    float hn = neighbor.EuclideanDistance(targetNode);
+                    // Si es la primera vez o encontramos un mejor camino
+                    if (!costs.ContainsKey(neighbor) || nextNodeCost < costs[neighbor])
+                    {
+                        costs[neighbor] = nextNodeCost; // Actualizar coste
+                        cameFrom[neighbor] = current;   // Guardar camino
 
-                    if (!openSet.ContainsKey(hn)) // No se pueden añadir claves duplicadas en SortedList
-                        openSet.Add(hn, neighbor);
+                        //Calculamos f = g + h
+                        float f = nextNodeCost + neighbor.EuclideanDistance(targetNode);
+
+                        // SortedList no deja meter claves repetidas, así que si existe la modificamos un poco
+                        while (openSet.ContainsKey(f))
+                            f += 0.0001f;
+
+                        openSet.Add(f, neighbor);
+                    }
                 }
             }
+
             return null;
         }
+
 
         private CellInfo[] ReconstructPath(Dictionary<CellInfo, CellInfo> cameFrom, CellInfo current)
         {
