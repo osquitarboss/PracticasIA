@@ -1,5 +1,6 @@
 using Navigation.Interfaces;
 using Navigation.World;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -24,6 +25,7 @@ namespace GrupoJ
         {
             _worldInfo = worldInfo;
             _navigationAlgorithm = navigationAlgorithm;
+            Debug.Log("Numero de destinos: " + GetDestinations().Length);
         }
 
         public Vector3? GetNextDestination(Vector3 currentPosition)
@@ -40,6 +42,7 @@ namespace GrupoJ
                 CellInfo position = _worldInfo.FromVector3(currentPosition);
                 CellInfo[] path = _navigationAlgorithm.GetPath(position, CurrentObjective);
                 _path = new Queue<CellInfo>(path);
+
             }
 
             if (_path.Count > 0)
@@ -54,7 +57,11 @@ namespace GrupoJ
         private CellInfo[] GetDestinations()
         {
             List<CellInfo> targets = new List<CellInfo>();
-            targets.Add(_worldInfo.Exit);
+            foreach (var cell in _worldInfo.Targets)
+            {
+                targets.Add(cell);
+            }
+
             return targets.ToArray();
         }
     }
