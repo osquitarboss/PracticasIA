@@ -17,7 +17,7 @@ namespace GrupoJ
         public CellInfo[] GetPath(CellInfo startNode, CellInfo targetNode)
         {
             //Hacemos nuestra openList con sortedlist para mantener ordenados por heurística (distancia línea recta)
-            SortedList<float, CellInfo> openSet = new SortedList<float, CellInfo>();
+            SortedList<float, CellInfo> openList = new SortedList<float, CellInfo>();
 
             // El coste desde el nodo inicial a cada nodo
             Dictionary<CellInfo, float> costs = new Dictionary<CellInfo, float>();
@@ -28,14 +28,14 @@ namespace GrupoJ
             // Añadimos el nodo inicial con su heurística y su coste (al principio vale 0 porque no ha recorrido nada aún)
             float h = startNode.EuclideanDistance(targetNode);
             costs[startNode] = 0;
-            openSet.Add(h, startNode);
+            openList.Add(h, startNode);
 
-            while (openSet.Count > 0)
+            while (openList.Count > 0)
             {
                 // Sacar el de menor heurística
-                float lowestF = openSet.Keys[0];
-                CellInfo current = openSet[lowestF];
-                openSet.RemoveAt(0);
+                float lowestF = openList.Keys[0];
+                CellInfo current = openList[lowestF];
+                openList.RemoveAt(0);
 
                 ///Si encontramos el target, reconstruir el camino
                 if (current == targetNode)
@@ -57,14 +57,14 @@ namespace GrupoJ
                         costs[neighbor] = nextNodeCost; // Actualizar los coste
                         cameFrom[neighbor] = current;   //Guardar camino
 
-                        //Calculamos f* = g + h*
+                        //Calculamos f estrella : f* = g + h*
                         float f = nextNodeCost + neighbor.EuclideanDistance(targetNode);
 
                         // SortedList no deja meter claves repetidas, así que si existe la modificamos un poco
-                        while (openSet.ContainsKey(f))
+                        while (openList.ContainsKey(f))
                             f += 0.0001f;
 
-                        openSet.Add(f, neighbor);
+                        openList.Add(f, neighbor);
                     }
                 }
             }

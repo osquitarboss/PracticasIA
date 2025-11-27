@@ -25,16 +25,17 @@ namespace GrupoJ
         {
             _worldInfo = worldInfo;
             _navigationAlgorithm = navigationAlgorithm;
-            Debug.Log("Numero de destinos: " + GetDestinations().Count);
+            Debug.Log("numero de destinos: " + GetDestinations().Count);
         }
 
         public Vector3? GetNextDestination(Vector3 currentPosition)
         {
-            Debug.Log("Obteniendo siguiente destino desde la posicion: " + currentPosition);
+            Debug.Log("obteniendo siguiente destino desde: " + currentPosition);
             // Primera iteracion, obtener objetivos y sacar el primero
             if (_objectives == null)
             {
                 _objectives = GetDestinations();
+                _objectives = SortByDistance(_objectives, _worldInfo.FromVector3(currentPosition));
                 CurrentObjective = _objectives[0];
                 _objectives.RemoveAt(0);
                 NumberOfDestinations = _objectives.Count;
@@ -53,7 +54,7 @@ namespace GrupoJ
             if (_path.Count > 0)
             {
                 CellInfo destination = _path.Dequeue();
-                Debug.Log("Numero de nodos: " + _path.Count);
+                Debug.Log("nodos: " + _path.Count);
                 CurrentDestination = _worldInfo.ToWorldPosition(destination);
             }
 
@@ -72,7 +73,7 @@ namespace GrupoJ
                 _objectives.Add(_worldInfo.Exit);
             }
 
-            Debug.Log("Calculando ruta hacia el objetivo: " + CurrentObjective);
+            Debug.Log("ruta hacia el objetivo: " + CurrentObjective);
             Debug.Log("Numero de destinos: " + _objectives.Count);
             return CurrentDestination;
         }
@@ -85,6 +86,7 @@ namespace GrupoJ
             {
                 targets.Add(cell);
             }
+
             return targets;
         }
 
