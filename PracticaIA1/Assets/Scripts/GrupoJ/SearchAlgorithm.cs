@@ -16,7 +16,7 @@ namespace GrupoJ
 
         public CellInfo[] GetPath(CellInfo startNode, CellInfo targetNode)
         {
-            //Hacemos nuestra openList con sortedlist para mantener ordenados por heurística
+            //Hacemos nuestra openList con sortedlist para mantener ordenados por heurística (distancia línea recta)
             SortedList<float, CellInfo> openSet = new SortedList<float, CellInfo>();
 
             // El coste desde el nodo inicial a cada nodo
@@ -32,19 +32,20 @@ namespace GrupoJ
 
             while (openSet.Count > 0)
             {
-                // Sacar el de menor heurística (EuclideanDistance de la clase CellInfo)
+                // Sacar el de menor heurística
                 float lowestF = openSet.Keys[0];
                 CellInfo current = openSet[lowestF];
                 openSet.RemoveAt(0);
 
-                /// Si encontramos el target, reconstruir el camino
+                ///Si encontramos el target, reconstruir el camino
                 if (current == targetNode)
                     return ReconstructPath(cameFrom, current);
 
-                // Expandir vecinos
+                // Expandir a los  vecinos
                 foreach (CellInfo neighbor in GetNeighbours(current))
                 {
-                    if (!neighbor.Walkable) // Comprobar si se puede caminar
+
+                    if (!neighbor.Walkable)
                         continue;
 
                     // Coste acumulado al siguiente nodo
@@ -53,10 +54,10 @@ namespace GrupoJ
                     // Si es la primera vez o encontramos un mejor camino
                     if (!costs.ContainsKey(neighbor) || nextNodeCost < costs[neighbor])
                     {
-                        costs[neighbor] = nextNodeCost; // Actualizar coste
-                        cameFrom[neighbor] = current;   // Guardar camino
+                        costs[neighbor] = nextNodeCost; // Actualizar los coste
+                        cameFrom[neighbor] = current;   //Guardar camino
 
-                        //Calculamos f = g + h
+                        //Calculamos f* = g + h*
                         float f = nextNodeCost + neighbor.EuclideanDistance(targetNode);
 
                         // SortedList no deja meter claves repetidas, así que si existe la modificamos un poco
@@ -68,12 +69,13 @@ namespace GrupoJ
                 }
             }
 
-            return null;
+            return null; // Delvolver null si no se encuentra camino
         }
 
 
         private CellInfo[] ReconstructPath(Dictionary<CellInfo, CellInfo> cameFrom, CellInfo current)
         {
+            //Convertir el mapa de cameFrom en un array de celdas
             List<CellInfo> path = new List<CellInfo>();
             path.Add(current);
 

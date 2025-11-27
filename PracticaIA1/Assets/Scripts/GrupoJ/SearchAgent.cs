@@ -40,6 +40,7 @@ namespace GrupoJ
                 NumberOfDestinations = _objectives.Count;
             }
 
+            // Si no hay ruta, calcularla hacia el objetivo actual
             if (_path == null || _path.Count == 0)
             {
                 CellInfo position = _worldInfo.FromVector3(currentPosition);
@@ -48,6 +49,7 @@ namespace GrupoJ
 
             }
 
+            // Si hay ruta, obtener el siguiente nodo
             if (_path.Count > 0)
             {
                 CellInfo destination = _path.Dequeue();
@@ -55,6 +57,7 @@ namespace GrupoJ
                 CurrentDestination = _worldInfo.ToWorldPosition(destination);
             }
 
+            //Si se ha llegado al objetivo actual obtener el siguiente objetivo
             if (_path.Count == 0 && _objectives.Count > 0)
             {
                 _objectives = SortByDistance(_objectives, _worldInfo.FromVector3(currentPosition));
@@ -63,6 +66,7 @@ namespace GrupoJ
                 NumberOfDestinations = _objectives.Count;
             }
 
+            // Si no hay mas objetivos manfar al agente a la cell exit
             if (_objectives.Count == 0 && _path.Count == 0)
             {
                 _objectives.Add(_worldInfo.Exit);
@@ -73,6 +77,7 @@ namespace GrupoJ
             return CurrentDestination;
         }
 
+        //Meter  las cell objetivo
         private List<CellInfo> GetDestinations()
         {
             List<CellInfo> targets = new List<CellInfo>();
@@ -83,6 +88,7 @@ namespace GrupoJ
             return targets;
         }
 
+        // Ordenar las cell objetivo por distancia al agente para que al llegar a un objetivo se dirija al mas cercano
         List<CellInfo> SortByDistance(List<CellInfo> targets, CellInfo currentPos)
         {
             targets.Sort((a, b) =>
