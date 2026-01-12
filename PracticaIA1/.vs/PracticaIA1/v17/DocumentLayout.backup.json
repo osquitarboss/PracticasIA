@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\assets\\scripts\\grupoj\\searchalgorithm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|c:\\users\\matut\\documents\\github\\practicasia\\practicaia1\\assets\\scripts\\grupoj\\searchalgorithm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\grupoj\\searchalgorithm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|c:\\users\\matut\\documents\\github\\practicasia\\practicaia1\\assets\\scripts\\grupoj\\searchagent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\assets\\scripts\\grupoj\\searchagent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\grupoj\\searchagent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\assets\\scripts\\components\\navigationmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F27FEC15-203D-86FA-10A9-CE4F6B1E5927}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\components\\navigationmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,23 +18,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "NavigationMovement.cs",
-              "DocumentMoniker": "C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\Assets\\Scripts\\Components\\NavigationMovement.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Components\\NavigationMovement.cs",
-              "ToolTip": "C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\Assets\\Scripts\\Components\\NavigationMovement.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Components\\NavigationMovement.cs",
-              "ViewState": "AgIAADgAAAAAAAAAAAAEwEwAAABaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-24T19:49:57.228Z"
             },
             {
               "$type": "Document",
@@ -48,7 +32,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\GrupoJ\\SearchAlgorithm.cs",
               "ToolTip": "C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\Assets\\Scripts\\GrupoJ\\SearchAlgorithm.cs",
               "RelativeToolTip": "Assets\\Scripts\\GrupoJ\\SearchAlgorithm.cs",
-              "ViewState": "AgIAAFIAAAAAAAAAAADwv2cAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAswGkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-24T19:38:35.676Z",
               "EditorCaption": ""
@@ -61,7 +45,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\GrupoJ\\SearchAgent.cs",
               "ToolTip": "C:\\Users\\matut\\Documents\\GitHub\\PracticasIA\\PracticaIA1\\Assets\\Scripts\\GrupoJ\\SearchAgent.cs",
               "RelativeToolTip": "Assets\\Scripts\\GrupoJ\\SearchAgent.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAIwFoAAAB2AAAAAAAAAA==",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAswGkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-22T19:01:00.468Z",
               "EditorCaption": ""
