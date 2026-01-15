@@ -91,7 +91,7 @@ namespace Navigation.World
         #endregion
         
         #region Distance calculation
-        private float EuclideanDistance(CellInfo other)
+        public float EuclideanDistance(CellInfo other)
         {
             return Mathf.Sqrt(Mathf.Pow(x - other.x, 2) + Mathf.Pow(y - other.y, 2));
         }

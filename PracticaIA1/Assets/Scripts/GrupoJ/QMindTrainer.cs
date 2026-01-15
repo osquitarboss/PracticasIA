@@ -4,7 +4,9 @@ using Navigation.Interfaces;
 using System;
 
 namespace GrupoJ{
-    public class QMindTrainer : IQMindTrainer
+
+    
+    public class QMindTrainer : MonoBehaviour, IQMindTrainer
     {
         public int CurrentEpisode { get; set; }
         public int CurrentStep { get; set; }
@@ -29,6 +31,7 @@ namespace GrupoJ{
         private float epsilon;
 
         private QAction currentAction;
+        private string currentStateKey; 
 
         
         public void Initialize(QMindTrainerParams trainerParams, WorldInfo worldInfo, INavigationAlgorithm navigationAlgorithm){
@@ -70,7 +73,7 @@ namespace GrupoJ{
                 }
 
                 AgentPosition = path[0];
-                string nextStateKey = StateKey(AgentPosition);
+                string nextStateKey = StateKey(AgentPosition, OtherPosition);
                 
                 float reward = GetReward(AgentPosition);
                 ApplyQUpdate(currentStateKey, action, reward, nextStateKey);
@@ -103,12 +106,29 @@ namespace GrupoJ{
             return (QAction) Enum.GetValues(typeof(QAction)).GetValue(1); //Coge el primer valor en caso de que el aleatorio sea mayor que epsilon
         }
 
+        CellInfo GetTargetCell(QAction action)
+        {
+            int x = AgentPosition.x;
+            int y = AgentPosition.y;
+
+            switch (action)
+            {
+                case QAction.North:    y += 1; break;
+                case QAction.South:  y -= 1; break;
+                case QAction.West:  x -= 1; break;
+                case QAction.East: x += 1; break;
+            }
+
+            return world[x, y];
+        }
+
         private string StateKey(CellInfo agent, CellInfo enemy){
             return $"{agent.x},{agent.y}|{enemy.x},{enemy.y}";
         }
 
         private float GetReward(CellInfo cell){
             // poner un switch o algo para las recompensas
+            return 0;
         }
 
         private void FinishEpisode()
