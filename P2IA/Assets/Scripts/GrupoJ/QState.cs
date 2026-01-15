@@ -23,7 +23,7 @@ using NavigationDJIA.World;
 ///  ya que esa clave se usará como índice en la TablaQ y en el archivo CSV.
 /// </summary>
 
-namespace GrupoA
+namespace GrupoJ
 {
     public sealed class QState
     {

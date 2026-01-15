@@ -4,7 +4,7 @@ using NavigationDJIA.World;
 using QMind;
 using QMind.Interfaces;
 
-namespace GrupoA
+namespace GrupoJ
 {
     public class QMindTrainer : IQMindTrainer
     {
@@ -134,13 +134,17 @@ namespace GrupoA
         /// </summary>
         private QAction ChooseAction(string stateKey, bool train)
         {
-            // TODO (alumno):
-            // 1. Si !train -> return _qTable.GetBestAction(stateKey);
-            // 2. Si train:
-            //    - double r = _random.NextDouble();
-            //    - si r < _params.epsilon -> acción aleatoria
-            //    - si no -> _qTable.GetBestAction(stateKey)
-            throw new NotImplementedException();
+            if(!train) 
+            return _qTable.GetBestAction(stateKey); 
+            else
+            {
+                double r = _random.NextDouble();
+                if(r < _params.epsilon){
+                    Array values = Enum.GetValues(typeof(QAction));
+                    return (QAction)values.GetValue(_random.Next(values.Length));
+                    } else
+                        return _qTable.GetBestAction(stateKey);
+                    }
         }
 
         /// <summary>
@@ -149,15 +153,15 @@ namespace GrupoA
         /// Usa _qTable.GetQ, _qTable.SetQ y _qTable.GetMaxQ.
         /// </summary>
         private void UpdateQ(string stateKey, QAction action, float reward, string nextStateKey)
-        {
-            // TODO (alumno):
-            // float oldQ = _qTable.GetQ(stateKey, action);
-            // float maxQNext = _qTable.GetMaxQ(nextStateKey);
-            // float target = reward + _params.gamma * maxQNext;
-            // float newQ = (1 - _params.alpha) * oldQ + _params.alpha * target;
-            // _qTable.SetQ(stateKey, action, newQ);
-            throw new NotImplementedException();
-        }
+            {
+                float oldQ = _qTable.GetQ(stateKey, action);
+                float maxQNext = _qTable.GetMaxQ(nextStateKey);
+
+                float target = reward + _params.gamma * maxQNext;
+                float newQ = (1 - _params.alpha) * oldQ + _params.alpha * target;
+
+                _qTable.SetQ(stateKey, action, newQ);
+            }
 
         /// <summary>
         /// Función de recompensa.
@@ -166,13 +170,14 @@ namespace GrupoA
         ///   si no -> pequeña penalización negativa por cada paso.
         /// </summary>
         private float ComputeReward(CellInfo agent, CellInfo other)
-        {
-            // TODO (alumno).
-            // Ejemplo orientativo:
-            // if (agent == other) return 10f;
-            // else return -0.01f;
-            throw new NotImplementedException();
-        }
+            {
+                // Recompensa grande si captura al oponente
+                if (agent == other)
+                    return 10f;
+
+                // Penalización pequeña por cada paso
+                return -0.01f;
+            }
 
         /// <summary>
         /// Condición de final de episodio.
@@ -180,11 +185,10 @@ namespace GrupoA
         /// También puedes definir una probabilidad para el parámetro v visto en clase.
         /// </summary>
         private bool IsTerminalState(CellInfo agent, CellInfo other)
-        {
-            // TODO (alumno):
-            // return agent == other;
-            throw new NotImplementedException();
-        }
+            {
+                // Episodio termina cuando agente alcanza al oponente
+                return agent == other;
+            }
 
 
         private CellInfo ApplyAction(CellInfo agentCell, QAction action)
