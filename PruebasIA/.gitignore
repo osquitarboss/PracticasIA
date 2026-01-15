@@ -1,0 +1,43 @@
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# Eliminar carpetas de MemoryProfiler
+/[Mm]emoryCaptures/
+
+# Asset Store packages (se pueden volver a descargar)
+/[Aa]ssets/AssetStoreTools*
+
+# Archivos de proyectos de Visual Studio / JetBrains
+[Vv]isual[Ss]tudio.Unity.Messaging
+.csproj
+.unityproj
+.sln
+.suo
+.tmp
+.user
+.userprefs
+.pidb
+.booproj
+.svclog
+.cache
+
+# Archivos de configuración de Rider / Resharper
+.idea/
+*.die
+*.precision
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Crash reports de Unity
+sysinfo.txt
+
+# Builds de WebGL
+[Aa]ssets/StreamingAssets/aa/*
+[Aa]ssets/StreamingAssets/UnityServicesConfig.json
