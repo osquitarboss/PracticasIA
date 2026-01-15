@@ -3,6 +3,7 @@ using NavigationDJIA.Interfaces;
 using NavigationDJIA.World;
 using QMind;
 using QMind.Interfaces;
+using UnityEngine;
 
 namespace GrupoJ
 {
@@ -57,7 +58,6 @@ namespace GrupoJ
             CurrentEpisode++;
             CurrentStep = 0;
             _return = 0f;
-            _returnAveraged = 0f;
 
             _agentPosition = _worldInfo.RandomCell();
             _otherPosition = _worldInfo.RandomCell();
@@ -68,7 +68,6 @@ namespace GrupoJ
         private void EndEpisode()
         {
             _qTable.SaveToCsv();
-
             OnEpisodeFinished?.Invoke(this, EventArgs.Empty);
 
             if (_params.episodes > 0 && CurrentEpisode >= _params.episodes)
@@ -81,20 +80,14 @@ namespace GrupoJ
 
         public void DoStep(bool train)
         {
-            // Estado actual del agente
+            Debug.Log($"Paso ejecutado. Agente en: {_agentPosition.x}, {_agentPosition.y}");
             string stateKey = BuildStateKey(_agentPosition, _otherPosition);
-
-            // Seleciona la acción a realizar
             QAction action = ChooseAction(stateKey, train);
 
-            // Nuevos estados del agente y del oponente
             CellInfo newAgentPos = ApplyAction(_agentPosition, action);
-            CellInfo newOtherPos = MoveOpponent(_otherPosition, newAgentPos.Walkable ? newAgentPos : _agentPosition);
+            CellInfo newOtherPos = MoveOpponent(_otherPosition, newAgentPos);
             
-            // Nuevo estado del agente
             string nextStateKey = BuildStateKey(newAgentPos, newOtherPos);
-            
-            // Calcula la recompensa
             float reward = ComputeReward(newAgentPos, newOtherPos);
 
             if (train)
@@ -102,117 +95,122 @@ namespace GrupoJ
                 UpdateQ(stateKey, action, reward, nextStateKey);
             }
 
-            // actualiza las posiciones
             _agentPosition = newAgentPos;
             _otherPosition = newOtherPos;
 
-            // Actualizamos estadísticas de recompensas
             CurrentStep++;
             _return += reward;
             _returnAveraged = (_returnAveraged * (CurrentStep - 1) + reward) / CurrentStep;
 
-            // Comprobación de si estamos en el fin de episodio
             if (IsTerminalState(_agentPosition, _otherPosition))
             {
                 EndEpisode();
             }
         }
 
-        #region Parte a implementar por el alumno
+        #region Implementación Q-Learning
 
         private string BuildStateKey(CellInfo agent, CellInfo other)
-        {
-            var state = new QState(agent, other);
-            return state.ToKey();
-        }
+    {
+        return new QState(agent, other, _worldInfo).ToKey();
+    }
 
-        /// <summary>
-        /// Ejemplo orientativo:
-        ///    - Si train == false, puedes usar la mejor acción.
-        ///    - Si train == true, con probabilidad epsilon elegir acción aleatoria,
-        ///      y con probabilidad 1-epsilon la mejor según _qTable.GetBestAction(stateKey).
-        /// </summary>
         private QAction ChooseAction(string stateKey, bool train)
         {
-            if(!train) 
-            return _qTable.GetBestAction(stateKey); 
-            else
+            if (train && _random.NextDouble() < _params.epsilon)
             {
-                double r = _random.NextDouble();
-                if(r < _params.epsilon){
-                    Array values = Enum.GetValues(typeof(QAction));
-                    return (QAction)values.GetValue(_random.Next(values.Length));
-                    } else
-                        return _qTable.GetBestAction(stateKey);
-                    }
+                Array values = Enum.GetValues(typeof(QAction));
+                return (QAction)values.GetValue(_random.Next(values.Length));
+            }
+            return _qTable.GetBestAction(stateKey);
         }
 
-        /// <summary>
-        /// Actualización de Q-Learning:
-        /// Q(s,a) = (1 - alpha) * Q(s,a) + alpha * (reward + gamma * max_a' Q(s',a')).
-        /// Usa _qTable.GetQ, _qTable.SetQ y _qTable.GetMaxQ.
-        /// </summary>
         private void UpdateQ(string stateKey, QAction action, float reward, string nextStateKey)
-            {
-                float oldQ = _qTable.GetQ(stateKey, action);
-                float maxQNext = _qTable.GetMaxQ(nextStateKey);
+        {
+            float oldQ = _qTable.GetQ(stateKey, action);
+            float maxQNext = _qTable.GetMaxQ(nextStateKey);
 
-                float target = reward + _params.gamma * maxQNext;
-                float newQ = (1 - _params.alpha) * oldQ + _params.alpha * target;
+            float target = reward + _params.gamma * maxQNext;
+            float newQ = (1 - _params.alpha) * oldQ + _params.alpha * target;
 
-                _qTable.SetQ(stateKey, action, newQ);
-            }
+            _qTable.SetQ(stateKey, action, newQ);
+        }
 
-        /// <summary>
-        /// Función de recompensa.
-        /// Ejemplo orientativo:
-        ///   si agent == other -> recompensa positiva grande (captura)
-        ///   si no -> pequeña penalización negativa por cada paso.
-        /// </summary>
         private float ComputeReward(CellInfo agent, CellInfo other)
-            {
-                // Recompensa grande si captura al oponente
-                if (agent == other)
-                    return 10f;
+        {
+            // 1. Penalización máxima si es alcanzado
+            if (agent.x == other.x && agent.y == other.y)
+                return -100f;
 
-                // Penalización pequeña por cada paso
-                return -0.01f;
+            // 2. Cálculo de mejora de distancia (como querías antes)
+            int distActual = Math.Abs(agent.x - other.x) + Math.Abs(agent.y - other.y);
+            int distPrevia = Math.Abs(_agentPosition.x - other.x) + Math.Abs(_agentPosition.y - other.y);
+
+            float reward = 0f;
+
+            if (distActual > distPrevia) reward = 5.0f; // Se aleja
+            else if (distActual < distPrevia) reward = -2.0f; // Se acerca
+            else reward = -0.5f; // Se queda igual (posible choque)
+
+            // 3. PENALIZACIÓN POR BORDES (Tratarlos como muros)
+            // Verificamos si la posición actual es el límite del mapa
+            bool esBordeX = (agent.x == 0 || agent.x == _worldInfo.WorldSize.x - 1);
+            bool esBordeY = (agent.y == 0 || agent.y == _worldInfo.WorldSize.y - 1);
+
+            if (esBordeX || esBordeY)
+            {
+                reward -= 2.0f; // Penalización extra por estar pegado al borde
             }
 
-        /// <summary>
-        /// Condición de final de episodio.
-        /// Lo más simple: cuando agente y oponente están en la misma celda.
-        /// También puedes definir una probabilidad para el parámetro v visto en clase.
-        /// </summary>
+            // 4. Penalización por esquinas (donde se juntan dos bordes)
+            if (esBordeX && esBordeY)
+            {
+                reward -= 5.0f; // Las esquinas son trampas mortales
+            }
+
+            return reward;
+        }
+
         private bool IsTerminalState(CellInfo agent, CellInfo other)
-            {
-                // Episodio termina cuando agente alcanza al oponente
-                return agent == other;
-            }
-
+        {
+            return agent == other;
+        }
 
         private CellInfo ApplyAction(CellInfo agentCell, QAction action)
-        {
-            int nx = agentCell.x;;
-            int ny = agentCell.y;
-
-            switch (action)
             {
-                case QAction.Up:    ny += 1; break;
-                case QAction.Down:  ny -= 1; break;
-                case QAction.Right: nx += 1; break;
-                case QAction.Left:  nx -= 1; break;
-                case QAction.Stay:  return agentCell;
+                int nx = agentCell.x;
+                int ny = agentCell.y;
+
+                // 1. Calcular coordenadas teóricas
+                switch (action)
+                {
+                    case QAction.Up:    ny += 1; break;
+                    case QAction.Down:  ny -= 1; break;
+                    case QAction.Right: nx += 1; break;
+                    case QAction.Left:  nx -= 1; break;
+                    case QAction.Stay:  return agentCell;
+                }
+
+                // 2. Validar límites usando WorldSize (x es width, y es height)
+                if (nx >= 0 && nx < _worldInfo.WorldSize.x && ny >= 0 && ny < _worldInfo.WorldSize.y)
+                {
+                    CellInfo targetCell = _worldInfo[nx, ny];
+
+                    // 3. Validar si la celda es caminable
+                    if (targetCell.Walkable)
+                    {
+                        return targetCell;
+                    }
+                }
+
+                // 4. Si es muro o fuera del mapa, se queda en la celda actual
+                return agentCell;
             }
-
-            return _worldInfo[nx, ny];
-        }
-
 
         private CellInfo MoveOpponent(CellInfo opponent, CellInfo target)
         {
             var path = _navigationAlgorithm.GetPath(opponent, target, 1);
-            if (path.Length > 0)
+            if (path != null && path.Length > 0)
                 return path[0];
 
             return opponent;

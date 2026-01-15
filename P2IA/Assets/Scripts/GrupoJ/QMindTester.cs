@@ -30,10 +30,11 @@ namespace GrupoJ
         }
 
         private string BuildStateKey(CellInfo agent, CellInfo other)
-        {
-            var state = new QState(agent, other);
-            return state.ToKey();
-        }
+    {
+        
+        var state = new QState(agent, other, _worldInfo);
+        return state.ToKey();
+    }
 
         private CellInfo ApplyAction(CellInfo agentCell, QAction action)
         {
