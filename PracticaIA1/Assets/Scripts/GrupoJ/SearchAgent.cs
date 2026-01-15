@@ -67,7 +67,7 @@ namespace GrupoJ
                 NumberOfDestinations = _objectives.Count;
             }
 
-            // Si no hay mas objetivos manfar al agente a la cell exit
+            // Si no hay mas objetivos mandar al agente a la cell exit
             if (_objectives.Count == 0 && _path.Count == 0)
             {
                 _objectives.Add(_worldInfo.Exit);
