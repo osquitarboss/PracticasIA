@@ -5,22 +5,22 @@ using UnityEngine;
 /// <summary>
 /// TODO(alumno):
 /// Define el "estado" que usará la Tabla Q para identificar cada situación del agente.
-/// 
+///
 /// El estado debe contener toda la información necesaria para que el agente pueda
 /// tomar decisiones informadas. Tú decides qué características incluir según lo
 /// que consideres relevante para resolver el problema.
-/// 
+///
 /// Ejemplos típicos de información que puede formar un estado:
 ///   - Posición del agente en la grid.
 ///   - Posición del otro personaje (enemigo).
 ///   - Distancia relativa entre agente y enemigo.
 ///   - Si hay muros en direcciones cercanas.
 ///   - Cualquier otro dato que consideres útil.
-/// 
+///
 /// En este ejercicio te damos un ejemplo simple basado únicamente en las posiciones
 /// del agente y del oponente. Puedes usarlo tal cual o ampliarlo.
-/// 
-/// IMPORTANTE: 
+///
+/// IMPORTANTE:
 ///  El estado debe poder convertirse a una clave única (string) mediante ToKey(),
 ///  ya que esa clave se usará como índice en la TablaQ y en el archivo CSV.
 /// </summary>
@@ -36,19 +36,19 @@ namespace GrupoJ
         public bool WalkRight {  get; }
         public bool WalkLeft { get; }
 
-        
+
         public QState(CellInfo agent, CellInfo other, WorldInfo world)
         {
             DistX = agent.x - other.x;   //Cuanto por encima del zombie
             DistY = agent.y - other.y;   //Cuanto a la derecha del zombie
-            
+
 
             WalkUp= IsWalkable(agent.x,agent.y +1, world);  //Si el vecino de arriba es caminable
             WalkDown = IsWalkable(agent.x, agent.y - 1, world); //Si el vecino de abajo es caminable
             WalkLeft = IsWalkable(agent.x - 1, agent.y, world); //Si el vecino por la izquierda es caminable
             WalkRight = IsWalkable(agent.x+1, agent.y, world);  //Si el vecino por la derecha es caminable
         }
-        //Función para calcular si está fuera del mapa 
+        //Función para calcular si está fuera del mapa
         private bool IsWalkable(int x, int y, WorldInfo world)
         {
             if(x<0 || x>= world.WorldSize.x || y<0 || y>= world.WorldSize.y) return false;
@@ -57,7 +57,6 @@ namespace GrupoJ
 
         public string ToKey()
         {
-            // ejemplo 1,1 | 1111  >>>> 1 encima del zombie 1 a la derecha del zombie y todos los vecinos caminables
             return $"{DistX},{DistY}|{(WalkUp ? 1 : 0)}{(WalkDown ? 1 : 0)}{(WalkLeft ? 1 : 0)}{(WalkRight? 1 : 0)}";
         }
     }

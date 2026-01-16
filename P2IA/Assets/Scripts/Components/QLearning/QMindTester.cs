@@ -1,18 +1,18 @@
 ﻿#region Copyright
 // MIT License
-// 
+//
 // Copyright (c) 2023 David María Arribas
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,7 +50,7 @@ namespace Components.QLearning
 
         private int _steps = 0;
         private int _captures = 0;
-        
+
         private void Start()
         {
             _worldInfo = WorldManager.Instance.WorldInfo;
@@ -76,14 +76,14 @@ namespace Components.QLearning
 
                 MoveAgent();
                 MoveOpponent();
-                
+
                 if(_agentCell == _opponentCell)
                 {
                     _captures++;
                     Debug.Log($"Opponent captured agent in {_steps} steps");
                     EditorApplication.ExitPlaymode();
                 }
-                
+
                 _steps++;
             }
         }
@@ -91,12 +91,12 @@ namespace Components.QLearning
         private void MoveAgent()
         {
             CellInfo newAgentCell = _qMind.GetNextStep(_agentCell, _opponentCell);
-            
+
             if(newAgentCell != null)
             {
                 _agentCell = newAgentCell;
             }
-            
+
             agent.destination = _worldInfo.ToWorldPosition(_agentCell);
         }
 
@@ -105,18 +105,18 @@ namespace Components.QLearning
             CellInfo[] path = _navigationAlgorithm.GetPath(_opponentCell, _agentCell, 1);
             if (path.Length > 0)
             {
-                _opponentCell = path[0];    
+                _opponentCell = path[0];
             }
             oponent.destination = _worldInfo.ToWorldPosition(_opponentCell);
         }
-        
+
         private void OnGUI()
         {
             GUIStyle guiStyle = new GUIStyle(GUI.skin.label);
             guiStyle.fontSize = 22;
             guiStyle.fontStyle = FontStyle.Bold;
             guiStyle.normal.textColor = Color.black;
-            
+
             GUI.Label(new Rect(10, 10, 300, 30), $"Steps: {_steps}", guiStyle);
             GUI.Label(new Rect(10, 40, 300, 30), $"Captures: {_captures}", guiStyle);
         }
