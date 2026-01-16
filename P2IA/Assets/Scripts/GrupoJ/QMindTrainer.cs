@@ -112,7 +112,7 @@ namespace GrupoJ
 
         private string BuildStateKey(CellInfo agent, CellInfo other)
     {
-        return new QState(agent, other).ToKey();
+        return new QState(agent, other, _worldInfo).ToKey();
     }
 
         private QAction ChooseAction(string stateKey, bool train)
@@ -135,7 +135,11 @@ namespace GrupoJ
 
             _qTable.SetQ(stateKey, action, newQ);
         }
-
+        private bool IsWalkable(int x, int y, WorldInfo world)
+        {
+            if (x < 0 || x >= world.WorldSize.x || y < 0 || y >= world.WorldSize.y) return false;
+            return world[x, y].Walkable;
+        }
         private float ComputeReward(CellInfo agent, CellInfo other)
         {
             float reward = 0f;
@@ -144,15 +148,15 @@ namespace GrupoJ
                 reward = -100f;
 
             // 2. Cálculo de distancias
-            int distActual = Math.Abs(agent.x - other.x) + Math.Abs(agent.y - other.y);
-            int distPrevia = Math.Abs(_agentPosition.x - other.x) + Math.Abs(_agentPosition.y - other.y);
+            int distActual = Math.Abs(agent.x-other.x) + Math.Abs(agent.y - other.y);
+            int distPrevia = Math.Abs(_agentPosition.x - _otherPosition.x) + Math.Abs(_agentPosition.y - _otherPosition.y);
 
 
             // --- LÓGICA DE MOVIMIENTO Y QUEDARSE QUIETO ---
             if (agent.x == _agentPosition.x && agent.y == _agentPosition.y)
             {
                 // PENALIZACIÓN POR QUEDARSE QUIETO (ya sea por elección o por choque)
-                reward = -0.5f; 
+                reward = -1.0f; 
             }
             else if (distActual >= distPrevia) 
             {
@@ -165,15 +169,19 @@ namespace GrupoJ
                 reward = -1.5f; 
             }
 
-            /* 3. Penalización por bordes (se mantiene igual)
-            bool esBordeX = (agent.x == 0 || agent.x == _worldInfo.WorldSize.x - 1);
-            bool esBordeY = (agent.y == 0 || agent.y == _worldInfo.WorldSize.y - 1);
-
-            if (esBordeX || esBordeY)
+            // Penalización por bordes (se mantiene igual)
+            //bool walkable = !(_agentPosition.x < 0 && _agentPosition.x >= _worldInfo.WorldSize.x && _agentPosition.y < 0 || _agentPosition.y >= _worldInfo.WorldSize.y);
+            int count = 0;
+            for (int i = -1; i <= 1; i += 2)
             {
-                reward -= 2.0f; 
-            }*/
-
+                bool walkable1 = !(agent.x+i < 0 && agent.x+i >= _worldInfo.WorldSize.x && agent.y < 0 || agent.y >= _worldInfo.WorldSize.y);
+                bool walkable2 = !(agent.x < 0 && agent.x >= _worldInfo.WorldSize.x && agent.y+i < 0 || _agentPosition.y+i >= _worldInfo.WorldSize.y);
+                if (walkable1) { count++; }
+                if (walkable2) { count++; }
+               
+            }
+            if(count < 2) { reward = -0.5f; }
+            
             return reward;
         }
 

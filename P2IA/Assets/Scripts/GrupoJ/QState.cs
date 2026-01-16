@@ -1,4 +1,6 @@
+using Components;
 using NavigationDJIA.World;
+using UnityEngine;
 
 /// <summary>
 /// TODO(alumno):
@@ -27,22 +29,35 @@ namespace GrupoJ
 {
     public sealed class QState
     {
-        public int AgentX { get; }
-        public int AgentY { get; }
-        public int OtherX { get; }
-        public int OtherY { get; }
+        public int DistX { get; }
+        public int DistY { get; }
+        public bool WalkUp { get; }
+        public bool WalkDown { get; }
+        public bool WalkRight {  get; }
+        public bool WalkLeft { get; }
 
-        public QState(CellInfo agent, CellInfo other)
+        
+        public QState(CellInfo agent, CellInfo other, WorldInfo world)
         {
-            AgentX = agent.x;
-            AgentY = agent.y;
-            OtherX = other.x;
-            OtherY = other.y;
+            DistX = agent.x - other.x;   //cuanto por encima del zombie
+            DistY = agent.y - other.y;   //cuanto a la derecha del zombie
+            
+
+            WalkUp= IsWalkable(agent.x,agent.y +1, world);
+            WalkDown = IsWalkable(agent.x, agent.y - 1, world);
+            WalkLeft = IsWalkable(agent.x - 1, agent.y, world);
+            WalkRight= IsWalkable(agent.x+1, agent.y, world);
+        }
+        private bool IsWalkable(int x, int y, WorldInfo world)
+        {
+            if(x<0 || x>= world.WorldSize.x || y<0 || y>= world.WorldSize.y) return false;
+            return world[x, y].Walkable;
         }
 
         public string ToKey()
         {
-            return $"{AgentX},{AgentY}|{OtherX},{OtherY}";
+            // ejemplo 1,1 | 1111  >>>> 1 encima del zombie 1 a la derecha del zombie y todos los vecinos caminables
+            return $"{DistX},{DistY}|{(WalkUp ? 1 : 0)}{(WalkDown ? 1 : 0)}{(WalkLeft ? 1 : 0)}{(WalkRight? 1 : 0)}";
         }
     }
 }

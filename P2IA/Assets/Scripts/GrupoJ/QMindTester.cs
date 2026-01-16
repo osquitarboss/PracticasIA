@@ -32,30 +32,32 @@ namespace GrupoJ
         private string BuildStateKey(CellInfo agent, CellInfo other)
     {
         
-        var state = new QState(agent, other);
+        var state = new QState(agent, other,_worldInfo);
         return state.ToKey();
     }
 
         private CellInfo ApplyAction(CellInfo agentCell, QAction action)
         {
+            int nx = agentCell.x;
+            int ny = agentCell.y;
             switch (action)
             {
-                case QAction.Up:
-                    return new CellInfo(agentCell.x, agentCell.y + 1);
-
-                case QAction.Down:
-                    return new CellInfo(agentCell.x, agentCell.y - 1);
-
-                case QAction.Right:
-                    return new CellInfo(agentCell.x + 1, agentCell.y);
-
-                case QAction.Left:
-                    return new CellInfo(agentCell.x - 1, agentCell.y);
-
-                case QAction.Stay:
-                default:
-                    return new CellInfo(agentCell.x, agentCell.y);
+                case QAction.Up: ny += 1; break;
+                case QAction.Down: ny -= 1; break;
+                case QAction.Right: nx += 1; break;
+                case QAction.Left: nx -= 1; break;
+                case QAction.Stay: return agentCell;
             }
+
+            if (nx >= 0 && nx < _worldInfo.WorldSize.x && ny >= 0 && ny < _worldInfo.WorldSize.y)
+            {
+                CellInfo targetCell = _worldInfo[nx, ny];
+                // SI ES CAMINABLE, se mueve. SI NO (es muro), devuelve la posición actual.
+                if (targetCell.Walkable)
+                    return targetCell;
+            }
+
+            return agentCell;
         }
     }
 }
