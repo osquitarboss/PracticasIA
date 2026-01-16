@@ -32,7 +32,7 @@ namespace GrupoJ
         private string BuildStateKey(CellInfo agent, CellInfo other)
     {
         
-        var state = new QState(agent, other, _worldInfo);
+        var state = new QState(agent, other);
         return state.ToKey();
     }
 

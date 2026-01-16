@@ -112,7 +112,7 @@ namespace GrupoJ
 
         private string BuildStateKey(CellInfo agent, CellInfo other)
     {
-        return new QState(agent, other, _worldInfo).ToKey();
+        return new QState(agent, other).ToKey();
     }
 
         private QAction ChooseAction(string stateKey, bool train)
@@ -138,35 +138,41 @@ namespace GrupoJ
 
         private float ComputeReward(CellInfo agent, CellInfo other)
         {
-            // 1. Penalización máxima si es alcanzado
+            float reward = 0f;
+            // 1. Penalización máxima si lo atrapan
             if (agent.x == other.x && agent.y == other.y)
-                return -100f;
+                reward = -100f;
 
-            // 2. Cálculo de mejora de distancia (como querías antes)
+            // 2. Cálculo de distancias
             int distActual = Math.Abs(agent.x - other.x) + Math.Abs(agent.y - other.y);
             int distPrevia = Math.Abs(_agentPosition.x - other.x) + Math.Abs(_agentPosition.y - other.y);
 
-            float reward = 0f;
 
-            if (distActual > distPrevia) reward = 5.0f; // Se aleja
-            else if (distActual < distPrevia) reward = -2.0f; // Se acerca
-            else reward = -0.5f; // Se queda igual (posible choque)
+            // --- LÓGICA DE MOVIMIENTO Y QUEDARSE QUIETO ---
+            if (agent.x == _agentPosition.x && agent.y == _agentPosition.y)
+            {
+                // PENALIZACIÓN POR QUEDARSE QUIETO (ya sea por elección o por choque)
+                reward = -100f; 
+            }
+            else if (distActual >= distPrevia) 
+            {
+                // Recompensa por alejarse efectivamente
+                reward = 2.0f; 
+            }
+            else 
+            {
+                // Penalización leve si se movió pero se acercó al oponente
+                reward = -1.5f; 
+            }
 
-            // 3. PENALIZACIÓN POR BORDES (Tratarlos como muros)
-            // Verificamos si la posición actual es el límite del mapa
+            /* 3. Penalización por bordes (se mantiene igual)
             bool esBordeX = (agent.x == 0 || agent.x == _worldInfo.WorldSize.x - 1);
             bool esBordeY = (agent.y == 0 || agent.y == _worldInfo.WorldSize.y - 1);
 
             if (esBordeX || esBordeY)
             {
-                reward -= 2.0f; // Penalización extra por estar pegado al borde
-            }
-
-            // 4. Penalización por esquinas (donde se juntan dos bordes)
-            if (esBordeX && esBordeY)
-            {
-                reward -= 5.0f; // Las esquinas son trampas mortales
-            }
+                reward -= 2.0f; 
+            }*/
 
             return reward;
         }
@@ -177,35 +183,30 @@ namespace GrupoJ
         }
 
         private CellInfo ApplyAction(CellInfo agentCell, QAction action)
+        {
+            int nx = agentCell.x;
+            int ny = agentCell.y;
+
+            switch (action)
             {
-                int nx = agentCell.x;
-                int ny = agentCell.y;
-
-                // 1. Calcular coordenadas teóricas
-                switch (action)
-                {
-                    case QAction.Up:    ny += 1; break;
-                    case QAction.Down:  ny -= 1; break;
-                    case QAction.Right: nx += 1; break;
-                    case QAction.Left:  nx -= 1; break;
-                    case QAction.Stay:  return agentCell;
-                }
-
-                // 2. Validar límites usando WorldSize (x es width, y es height)
-                if (nx >= 0 && nx < _worldInfo.WorldSize.x && ny >= 0 && ny < _worldInfo.WorldSize.y)
-                {
-                    CellInfo targetCell = _worldInfo[nx, ny];
-
-                    // 3. Validar si la celda es caminable
-                    if (targetCell.Walkable)
-                    {
-                        return targetCell;
-                    }
-                }
-
-                // 4. Si es muro o fuera del mapa, se queda en la celda actual
-                return agentCell;
+                case QAction.Up:    ny += 1; break;
+                case QAction.Down:  ny -= 1; break;
+                case QAction.Right: nx += 1; break;
+                case QAction.Left:  nx -= 1; break;
+                case QAction.Stay:  return agentCell;
             }
+
+            // Comprobamos límites del mundo
+            if (nx >= 0 && nx < _worldInfo.WorldSize.x && ny >= 0 && ny < _worldInfo.WorldSize.y)
+            {
+                CellInfo targetCell = _worldInfo[nx, ny];
+                // SI ES CAMINABLE, se mueve. SI NO (es muro), devuelve la posición actual.
+                if (targetCell.Walkable) 
+                    return targetCell;
+            }
+
+            return agentCell; 
+        }
 
         private CellInfo MoveOpponent(CellInfo opponent, CellInfo target)
         {
