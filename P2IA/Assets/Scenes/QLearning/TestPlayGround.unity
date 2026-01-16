@@ -421,10 +421,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b09744d94250472baae75646acec29f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 1405488106}
-  oponent: {fileID: 921274857}
+  agent: {fileID: 921274857}
+  oponent: {fileID: 1405488106}
   speed: 10
-  qMindClass: QMind.QMindDummy, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+  qMindClass: GrupoJ.QMindTester, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
     PublicKeyToken=null
 --- !u!4 &403569453
 Transform:

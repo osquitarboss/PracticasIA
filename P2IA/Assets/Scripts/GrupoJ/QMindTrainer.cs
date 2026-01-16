@@ -152,7 +152,7 @@ namespace GrupoJ
             if (agent.x == _agentPosition.x && agent.y == _agentPosition.y)
             {
                 // PENALIZACIÓN POR QUEDARSE QUIETO (ya sea por elección o por choque)
-                reward = -100f; 
+                reward = -0.5f; 
             }
             else if (distActual >= distPrevia) 
             {
