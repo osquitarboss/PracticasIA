@@ -52,7 +52,7 @@ namespace GrupoJ
             if (nx >= 0 && nx < _worldInfo.WorldSize.x && ny >= 0 && ny < _worldInfo.WorldSize.y)
             {
                 CellInfo targetCell = _worldInfo[nx, ny];
-                // SI ES CAMINABLE, se mueve. SI NO (es muro), devuelve la posición actual.
+                // Si es caminable se mueve si no devuelve la posición actual.
                 if (targetCell.Walkable)
                     return targetCell;
             }

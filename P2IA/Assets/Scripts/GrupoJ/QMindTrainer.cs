@@ -152,35 +152,36 @@ namespace GrupoJ
             int distPrevia = Math.Abs(_agentPosition.x - _otherPosition.x) + Math.Abs(_agentPosition.y - _otherPosition.y);
 
 
-            // --- LÓGICA DE MOVIMIENTO Y QUEDARSE QUIETO ---
+            
             if (agent.x == _agentPosition.x && agent.y == _agentPosition.y)
             {
-                // PENALIZACIÓN POR QUEDARSE QUIETO (ya sea por elección o por choque)
+                // Penalización por quedarse quieto 
                 reward = -1.0f; 
             }
             else if (distActual >= distPrevia) 
             {
-                // Recompensa por alejarse efectivamente
+                // Recompensa por alejarse 
                 reward = 2.0f; 
             }
             else 
             {
-                // Penalización leve si se movió pero se acercó al oponente
+                // Penalización leve si se movió hacia el zombie
                 reward = -1.5f; 
             }
 
-            // Penalización por bordes (se mantiene igual)
-            //bool walkable = !(_agentPosition.x < 0 && _agentPosition.x >= _worldInfo.WorldSize.x && _agentPosition.y < 0 || _agentPosition.y >= _worldInfo.WorldSize.y);
+            
+            
             int count = 0;
             for (int i = -1; i <= 1; i += 2)
             {
-                bool walkable1 = !(agent.x+i < 0 && agent.x+i >= _worldInfo.WorldSize.x && agent.y < 0 || agent.y >= _worldInfo.WorldSize.y);
-                bool walkable2 = !(agent.x < 0 && agent.x >= _worldInfo.WorldSize.x && agent.y+i < 0 || _agentPosition.y+i >= _worldInfo.WorldSize.y);
+                bool walkable1 = !(agent.x+i < 0 && agent.x+i >= _worldInfo.WorldSize.x && agent.y < 0 || agent.y >= _worldInfo.WorldSize.y);   //Calcula si los dos vecinos por la izquierda y derecha son caminables
+                bool walkable2 = !(agent.x < 0 && agent.x >= _worldInfo.WorldSize.x && agent.y+i < 0 || _agentPosition.y+i >= _worldInfo.WorldSize.y);  //Calcula si los dos vecinos por encima y debajo son caminables
                 if (walkable1) { count++; }
                 if (walkable2) { count++; }
                
             }
-            if(count < 2) { reward = -0.5f; }
+            // Penalización si dos o más de sus vecinos no son caminables
+            if (count < 2) { reward = -0.5f; }
             
             return reward;
         }
@@ -208,7 +209,7 @@ namespace GrupoJ
             if (nx >= 0 && nx < _worldInfo.WorldSize.x && ny >= 0 && ny < _worldInfo.WorldSize.y)
             {
                 CellInfo targetCell = _worldInfo[nx, ny];
-                // SI ES CAMINABLE, se mueve. SI NO (es muro), devuelve la posición actual.
+                // Si es caminable se mueve  si no devuelve la posición actual.
                 if (targetCell.Walkable) 
                     return targetCell;
             }

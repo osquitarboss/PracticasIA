@@ -39,15 +39,16 @@ namespace GrupoJ
         
         public QState(CellInfo agent, CellInfo other, WorldInfo world)
         {
-            DistX = agent.x - other.x;   //cuanto por encima del zombie
-            DistY = agent.y - other.y;   //cuanto a la derecha del zombie
+            DistX = agent.x - other.x;   //Cuanto por encima del zombie
+            DistY = agent.y - other.y;   //Cuanto a la derecha del zombie
             
 
-            WalkUp= IsWalkable(agent.x,agent.y +1, world);
-            WalkDown = IsWalkable(agent.x, agent.y - 1, world);
-            WalkLeft = IsWalkable(agent.x - 1, agent.y, world);
-            WalkRight= IsWalkable(agent.x+1, agent.y, world);
+            WalkUp= IsWalkable(agent.x,agent.y +1, world);  //Si el vecino de arriba es caminable
+            WalkDown = IsWalkable(agent.x, agent.y - 1, world); //Si el vecino de abajo es caminable
+            WalkLeft = IsWalkable(agent.x - 1, agent.y, world); //Si el vecino por la izquierda es caminable
+            WalkRight = IsWalkable(agent.x+1, agent.y, world);  //Si el vecino por la derecha es caminable
         }
+        //Función para calcular si está fuera del mapa 
         private bool IsWalkable(int x, int y, WorldInfo world)
         {
             if(x<0 || x>= world.WorldSize.x || y<0 || y>= world.WorldSize.y) return false;
